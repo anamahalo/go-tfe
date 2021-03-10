@@ -97,6 +97,14 @@ type Workspace struct {
 	TriggerPrefixes      []string              `jsonapi:"attr,trigger-prefixes"`
 	VCSRepo              *VCSRepo              `jsonapi:"attr,vcs-repo"`
 	WorkingDirectory     string                `jsonapi:"attr,working-directory"`
+	UpdatedAt            time.Time             `jsonapi:"attr,updated-at,iso8601"`
+	ResourceCount        int                   `jsonapi:"attr,resource-count"`
+	Readme               string                `jsonapi:"attr,readme"`
+	ApplyDurationAverage time.Duration         `jsonapi:"attr,apply-duration-average"`
+	PlanDurationAverage  time.Duration         `jsonapi:"attr,plan-duration-average"`
+	PolicyCheckFailures  int                   `jsonapi:"attr,policy-check-failures"`
+	RunFailures          int                   `jsonapi:"attr,run-failures"`
+	RunsCount            int                   `jsonapi:"attr,workspace-kpis-runs-count"`
 
 	// Relations
 	AgentPool    *AgentPool    `jsonapi:"relation,agent-pool"`
@@ -320,6 +328,10 @@ func (s *workspaces) Read(ctx context.Context, organization, workspace string) (
 		return nil, err
 	}
 
+	// durations come over in ms
+	w.ApplyDurationAverage *= (time.Second / time.Millisecond)
+	w.PlanDurationAverage *= (time.Second / time.Millisecond)
+
 	return w, nil
 }
 
@@ -340,6 +352,10 @@ func (s *workspaces) ReadByID(ctx context.Context, workspaceID string) (*Workspa
 	if err != nil {
 		return nil, err
 	}
+
+	// durations come over in ms
+	w.ApplyDurationAverage *= (time.Second / time.Millisecond)
+	w.PlanDurationAverage *= (time.Second / time.Millisecond)
 
 	return w, nil
 }
