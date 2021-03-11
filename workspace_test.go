@@ -256,6 +256,22 @@ func TestWorkspacesRead(t *testing.T) {
 	})
 }
 
+func TestWorkspacesReadWithHistory(t *testing.T) {
+	client := testClient(t)
+
+	orgTest, orgTestCleanup := createOrganization(t, client)
+	defer orgTestCleanup()
+
+	wTest, wTestCleanup := createWorkspace(t, client, orgTest)
+	defer wTestCleanup()
+
+	run, rCleanup := createAppliedRun(t, client, wTest)
+	defer rCleanup()
+
+	assert.Equal(t, 1, run.Workspace.RunsCount)
+	assert.Equal(t, 1, run.Workspace.ResourceCount)
+}
+
 func TestWorkspacesReadByID(t *testing.T) {
 	client := testClient(t)
 	ctx := context.Background()
