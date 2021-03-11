@@ -265,11 +265,14 @@ func TestWorkspacesReadWithHistory(t *testing.T) {
 	wTest, wTestCleanup := createWorkspace(t, client, orgTest)
 	defer wTestCleanup()
 
-	run, rCleanup := createAppliedRun(t, client, wTest)
+	_, rCleanup := createAppliedRun(t, client, wTest)
 	defer rCleanup()
 
-	assert.Equal(t, 1, run.Workspace.RunsCount)
-	assert.Equal(t, 1, run.Workspace.ResourceCount)
+	w, err := client.Workspaces.Read(context.Background(), orgTest.Name, wTest.Name)
+	require.NoError(t, err)
+
+	assert.Equal(t, 1, w.RunsCount)
+	assert.Equal(t, 1, w.ResourceCount)
 }
 
 func TestWorkspacesReadByID(t *testing.T) {
